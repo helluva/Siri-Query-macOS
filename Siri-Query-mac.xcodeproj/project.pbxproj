@@ -8,18 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		430E44541EABF06300116ABC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430E44531EABF06300116ABC /* AppDelegate.swift */; };
-		430E44561EABF06300116ABC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430E44551EABF06300116ABC /* ViewController.swift */; };
 		430E44581EABF06300116ABC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 430E44571EABF06300116ABC /* Assets.xcassets */; };
-		430E445B1EABF06300116ABC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 430E44591EABF06300116ABC /* Main.storyboard */; };
+		430E44631EABF2A600116ABC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 430E44621EABF2A600116ABC /* MainMenu.xib */; };
+		430E44671EABF96A00116ABC /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430E44661EABF96A00116ABC /* StatusMenuController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		430E44501EABF06300116ABC /* Siri-Query-mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siri-Query-mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		430E44531EABF06300116ABC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		430E44551EABF06300116ABC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		430E44571EABF06300116ABC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		430E445A1EABF06300116ABC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		430E445C1EABF06300116ABC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		430E44621EABF2A600116ABC /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		430E44661EABF96A00116ABC /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StatusMenuController.swift; path = ../StatusMenuController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,9 +53,9 @@
 			isa = PBXGroup;
 			children = (
 				430E44531EABF06300116ABC /* AppDelegate.swift */,
-				430E44551EABF06300116ABC /* ViewController.swift */,
+				430E44661EABF96A00116ABC /* StatusMenuController.swift */,
+				430E44621EABF2A600116ABC /* MainMenu.xib */,
 				430E44571EABF06300116ABC /* Assets.xcassets */,
-				430E44591EABF06300116ABC /* Main.storyboard */,
 				430E445C1EABF06300116ABC /* Info.plist */,
 			);
 			path = "Siri-Query-mac";
@@ -122,7 +122,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				430E44581EABF06300116ABC /* Assets.xcassets in Resources */,
-				430E445B1EABF06300116ABC /* Main.storyboard in Resources */,
+				430E44631EABF2A600116ABC /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,23 +133,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				430E44561EABF06300116ABC /* ViewController.swift in Sources */,
+				430E44671EABF96A00116ABC /* StatusMenuController.swift in Sources */,
 				430E44541EABF06300116ABC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		430E44591EABF06300116ABC /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				430E445A1EABF06300116ABC /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		430E445D1EABF06300116ABC /* Debug */ = {
@@ -291,6 +280,7 @@
 				430E44611EABF06300116ABC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
