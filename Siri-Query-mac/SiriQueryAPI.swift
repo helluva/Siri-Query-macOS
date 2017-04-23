@@ -10,7 +10,16 @@ import Foundation
 
 class SiriQueryAPI {
     
-    private static let baseURL = URL(string: "http://10.218.0.233:8081")!
+    private static let developmentMode = false
+    
+    static var baseURL: URL {
+        if SiriQueryAPI.developmentMode {
+            return URL(string: "http://10.218.0.233:8081")!
+        } else {
+            //http://bit.ly/2oxzOxW
+            return URL(string:"http://default-environment.r34djy5xx2.us-west-2.elasticbeanstalk.com")!
+        }
+    }
     
     static var currentTaskID: String?
     
@@ -85,9 +94,10 @@ class SiriQueryAPI {
         request.httpBody = bodyJson.data(using: .utf8)
         request.setValue("application/json", forHTTPHeaderField:"Content-Type")
         
-        URLSession.shared.dataTask(with: request, completionHandler: { data, _, error in
-            print(data)
-            print(error)
+        URLSession.shared.dataTask(with: request, completionHandler: { (data, _, error) -> () in
+            if let data = data {
+                print("uploaded with response: \(String(data: data, encoding: .utf8) ?? "")")
+            }
         }).resume()
     }
     
@@ -100,7 +110,9 @@ class SiriQueryAPI {
         let url = SiriQueryAPI.baseURL.appendingPathComponent(endpoint)
         let task = URLSession.shared.dataTask(with: url, completionHandler: { data, _, error in
             
-            print(error)
+            if let error = error {
+                print("error on data task: \(error)")
+            }
             
             if let data = data, let string = String(data: data, encoding: .utf8) {
                 completion(string)

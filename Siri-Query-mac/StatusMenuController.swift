@@ -10,7 +10,6 @@ import Cocoa
 import AVKit
 import AVFoundation
 
-let SQBaseURL = URL(string: "http://10.218.0.233:8081")!
 let inputPath = "/Users/Nate/Desktop/input.wav"
 let outputPath = "/Users/Nate/Desktop/output.mp4"
 let imagePath = "/Users/Nate/Desktop/screenshot.jpg"
@@ -84,7 +83,7 @@ class StatusMenuController: NSObject {
             self.recorder.updateMeters()
             print(self.recorder.averagePower(forChannel: 0))
 
-            if self.recorder.averagePower(forChannel: 0) < -100.0 {
+            if self.recorder.averagePower(forChannel: 0) <= -120.0 {
                 if Date().timeIntervalSince(startTime) > 3 {
                     self.recorder.stop()
                     self.levelTimer.invalidate()
@@ -92,12 +91,45 @@ class StatusMenuController: NSObject {
                         self.screenshot()
                         
                         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
-                            SiriQueryAPI.deliverResponse(imagePath: imagePath, audioPath: outputPath)
-                            
-                            self.getInput()
+                            self.verifyScreenshotHeight {
+                                SiriQueryAPI.deliverResponse(imagePath: imagePath, audioPath: outputPath)
+                                self.getInput()
+                            }
                         })
                     })
                 }
+            }
+        }
+    }
+    
+    func verifyScreenshotHeight(completion: @escaping () -> ()) {
+        let maxHeight = CGFloat(1260)
+        let image = NSImage(byReferencingFile: imagePath)
+        let size = image?.actualPixelSize ?? .zero
+        
+        print(size)
+        
+        if size.height <= maxHeight {
+            completion()
+        } else {
+            
+            print("cropping image")
+            
+            let cropped = NSImage.newImage(ofSize: CGSize(width: size.width, height: maxHeight)) { context in
+                let origin = CGPoint(x: 0, y: -(size.height - maxHeight)) //move down because (0, 0) is the bottom
+                let croppedRect = CGRect(origin: origin, size: size)
+                context.draw(image!.cgImage!, in: croppedRect)
+            }
+            
+            let bitmap = NSBitmapImageRep(cgImage: cropped.cgImage!)
+            if let pngData = bitmap.representation(using: .PNG, properties: [:]) {
+                try? pngData.write(to: URL(fileURLWithPath: imagePath))
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(400), execute: {
+                    completion()
+                })
+            } else {
+                completion()
             }
         }
     }
@@ -123,7 +155,7 @@ class StatusMenuController: NSObject {
     func screenshot() {
         let task = Process()
         task.launchPath = "/usr/sbin/screencapture"
-        task.arguments = ["-iWao", imagePath]
+        task.arguments = ["-iWa", imagePath]
         task.launch()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(20), execute: {
@@ -131,6 +163,7 @@ class StatusMenuController: NSObject {
             task2.launchPath = "/usr/local/bin/cliclick"
             task2.arguments = ["c:1250,100"]
             task2.launch()
+            
         })
     }
     
@@ -139,7 +172,7 @@ class StatusMenuController: NSObject {
         menuOutlet.title = "Waiting for input..."
         
         pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { (Timer) in
-            self.download(url: SQBaseURL.appendingPathComponent("/nextRecording.wav"), to: URL(fileURLWithPath: inputPath), completion: { text in
+            self.download(url: SiriQueryAPI.baseURL.appendingPathComponent("/nextRecording.wav"), to: URL(fileURLWithPath: inputPath), completion: { text in
                 self.runSiri(rawText: text)
             })
         }
@@ -162,7 +195,7 @@ class StatusMenuController: NSObject {
                 self.menuOutlet.title = "Downloading..."
                 
                 guard let id = SiriQueryAPI.currentTaskID else { return }
-                let downloadURL = SQBaseURL.appendingPathComponent("/recordings/\(id).wav")
+                let downloadURL = SiriQueryAPI.baseURL.appendingPathComponent("/recordings/\(id).wav")
                 
                 let task = URLSession.shared.downloadTask(with: downloadURL) { (tempLocalUrl, response, error) in
                     if let tempLocalUrl = tempLocalUrl, error == nil {
