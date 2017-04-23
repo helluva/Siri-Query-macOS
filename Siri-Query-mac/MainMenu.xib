@@ -16,17 +16,16 @@
         <customObject id="Ato-dh-ILa" userLabel="Delegate" customClass="AppDelegate" customModule="Siri_Query_mac" customModuleProvider="target"/>
         <customObject id="YHE-ZD-Fjn" userLabel="StatusMenuController" customClass="StatusMenuController" customModule="Siri_Query_mac" customModuleProvider="target">
             <connections>
+                <outlet property="menuOutlet" destination="boq-WI-Vk4" id="UCC-QR-NnB"/>
                 <outlet property="statusMenu" destination="mx8-0A-IMO" id="JUW-aH-5yp"/>
             </connections>
         </customObject>
         <menu id="mx8-0A-IMO">
             <items>
-                <menuItem title="Run" id="DiN-lh-dw4">
+                <menuItem title="Loading..." id="boq-WI-Vk4">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="runSiri:" target="YHE-ZD-Fjn" id="aAE-QQ-tTn"/>
-                    </connections>
                 </menuItem>
+                <menuItem isSeparatorItem="YES" id="qVK-py-2JK"/>
                 <menuItem title="Quit SiriQuery Server" id="C8v-5N-fbA">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>

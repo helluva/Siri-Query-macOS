@@ -10,7 +10,7 @@ import Foundation
 
 class SiriQueryAPI {
     
-    private static let baseURL = URL(string: "http://default-environment.r34djy5xx2.us-west-2.elasticbeanstalk.com")!
+    private static let baseURL = URL(string: "http://10.218.0.233:8081")!
     
     static var currentTaskID: String?
     
@@ -35,6 +35,20 @@ class SiriQueryAPI {
                 //error
             else {
                 completion(false)
+            }
+        })
+    }
+    
+    static func rawTextForNextQuery(completion: @escaping (String?) -> ()) {
+        dataTask(for: "/rawtext", completion: { response in
+        
+            if let response = response {
+                if response == "false" { completion(nil) }
+                else {
+                    completion(response)
+                }
+            } else {
+                completion(nil)
             }
         })
     }

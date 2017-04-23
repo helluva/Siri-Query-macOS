@@ -10,12 +10,13 @@ import Cocoa
 import AVKit
 import AVFoundation
 
-let SQBaseURL = URL(string: "http://default-environment.r34djy5xx2.us-west-2.elasticbeanstalk.com")!
+let SQBaseURL = URL(string: "http://10.218.0.233:8081")!
 let inputPath = "/Users/Nate/Desktop/input.wav"
 let outputPath = "/Users/Nate/Desktop/output.mp4"
 let imagePath = "/Users/Nate/Desktop/screenshot.jpg"
 
 class StatusMenuController: NSObject {
+    @IBOutlet weak var menuOutlet: NSMenuItem!
     
     var player: AVPlayer!
     var recorder: AVAudioRecorder!
@@ -33,31 +34,38 @@ class StatusMenuController: NSObject {
         statusItem.menu = statusMenu
         
         SiriQueryAPI.resetServer()
-        getRecording()
+        getInput()
     }
     
-    @IBAction func runSiri(_ sender: Any) {
-        let url = URL(fileURLWithPath: inputPath)
-        player = AVPlayer(url: url)
+    func runSiri(rawText: String) {
+        if rawText == "FALSE" {
+            let url = URL(fileURLWithPath: inputPath)
+            player = AVPlayer(url: url)
         
-        NSWorkspace.shared().launchApplication("/Applications/Siri.app")
+            NSWorkspace.shared().launchApplication("/Applications/Siri.app")
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
-            self.player.play()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
+                self.player.play()
             
-            let length = self.player.currentItem?.asset.duration
-            let duration = Int(1000 * (CMTimeGetSeconds(length!)))
+                let length = self.player.currentItem?.asset.duration
+                let duration = Int(1000 * (CMTimeGetSeconds(length!)))
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration), execute: {
-                self.record()
+                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration + 250), execute: {
+                    self.record()
+                    self.menuOutlet.title = "Listening to Siri..."
+                })
             })
-            
-            //            let task = Process()
-            //            task.launchPath = "/usr/bin/say"
-            //            task.arguments = ["what's the weather in atlanta"]
-            //            task.launch()
-            //            task.waitUntilExit()
-        })
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
+                let task = Process()
+                task.launchPath = "/usr/bin/say"
+                task.arguments = [rawText]
+                task.launch()
+                task.waitUntilExit()
+            })
+            self.record()
+            self.menuOutlet.title = "Listening to Siri..."
+        }
     }
 
 
@@ -76,17 +84,17 @@ class StatusMenuController: NSObject {
             self.recorder.updateMeters()
             print(self.recorder.averagePower(forChannel: 0))
 
-            if self.recorder.averagePower(forChannel: 0) == -120.0 {
+            if self.recorder.averagePower(forChannel: 0) < -100.0 {
                 if Date().timeIntervalSince(startTime) > 3 {
                     self.recorder.stop()
                     self.levelTimer.invalidate()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(750), execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(10), execute: {
                         self.screenshot()
                         
-                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250), execute: {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
                             SiriQueryAPI.deliverResponse(imagePath: imagePath, audioPath: outputPath)
                             
-                            self.getRecording()
+                            self.getInput()
                         })
                     })
                 }
@@ -107,6 +115,7 @@ class StatusMenuController: NSObject {
                 try fileManager.removeItem(at: url)
             } catch let error as NSError {
                 print(error)
+                menuOutlet.title = "Error"
             }
         }
     }
@@ -114,32 +123,43 @@ class StatusMenuController: NSObject {
     func screenshot() {
         let task = Process()
         task.launchPath = "/usr/sbin/screencapture"
-        task.arguments = ["-iWa", imagePath]
+        task.arguments = ["-iWao", imagePath]
         task.launch()
         
-        let task2 = Process()
-        task2.launchPath = "/usr/local/bin/cliclick"
-        task2.arguments = ["c:1250,100"]
-        task2.launch()
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(20), execute: {
+            let task2 = Process()
+            task2.launchPath = "/usr/local/bin/cliclick"
+            task2.arguments = ["c:1250,100"]
+            task2.launch()
+        })
     }
     
     
-    func getRecording() {
+    func getInput() {
+        menuOutlet.title = "Waiting for input..."
+        
         pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { (Timer) in
-            self.download(url: SQBaseURL.appendingPathComponent("/nextRecording.wav"), to: URL(fileURLWithPath: inputPath), completion: {
-                self.runSiri(self)
+            self.download(url: SQBaseURL.appendingPathComponent("/nextRecording.wav"), to: URL(fileURLWithPath: inputPath), completion: { text in
+                self.runSiri(rawText: text)
             })
         }
     }
     
-    func download(url: URL, to localUrl: URL, completion: @escaping () -> ()) {
+    func download(url: URL, to localUrl: URL, completion: @escaping (String) -> ()) {
         checkFile(path: inputPath)
         
         SiriQueryAPI.recordingAvailable(completion: { newRecordingAvailable in
             if newRecordingAvailable {
                 
+                SiriQueryAPI.rawTextForNextQuery(completion: { rawText in
+                    if let rawText = rawText {
+                        completion(rawText)
+                    }
+                })
+                
                 //download the new file
                 print("downloading")
+                self.menuOutlet.title = "Downloading..."
                 
                 guard let id = SiriQueryAPI.currentTaskID else { return }
                 let downloadURL = SQBaseURL.appendingPathComponent("/recordings/\(id).wav")
@@ -152,12 +172,14 @@ class StatusMenuController: NSObject {
                             try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
-                                print("file downloaded")
-                                completion()
+                                print("running Siri")
+                                self.menuOutlet.title = "Running Siri..."
+                                completion("FALSE")
                             })
                             
                         } catch (let writeError) {
                             print("error writing file \(localUrl) : \(writeError)")
+                            self.menuOutlet.title = "Error writing file \(localUrl) : \(writeError)"
                         }
                     }
                 }
