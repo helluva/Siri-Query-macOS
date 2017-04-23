@@ -35,8 +35,7 @@ class StatusMenuController: NSObject {
     }
     
     @IBAction func runSiri(_ sender: Any) {
-        print("runSiri")
-        checkOutputFile()
+        checkFile(path: outputPath)
         
         let url = URL(fileURLWithPath: outputPath)
         let startTime = Date()
@@ -50,16 +49,19 @@ class StatusMenuController: NSObject {
         levelTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (Timer) in
             self.recorder.updateMeters()
             print(self.recorder.averagePower(forChannel: 0))
+
             if self.recorder.averagePower(forChannel: 0) == -120.0 {
                 if Date().timeIntervalSince(startTime) > 3 {
                     self.recorder.stop()
                     self.levelTimer.invalidate()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(750), execute: {
+                        self.screenshot()
+                    })
                 }
             }
         }
-        
     }
-    
+
     @IBAction func quitClicked(sender: NSMenuItem) {
         NSApplication.shared().terminate(self)
     }
@@ -75,24 +77,10 @@ class StatusMenuController: NSObject {
         })
     }
     
-    func checkMeters() {
-        print("ugh")
-        self.recorder.updateMeters()
-        print(self.recorder.averagePower(forChannel: 0))
-        if self.recorder.averagePower(forChannel: 0) == -120.0 {
-            if Date().timeIntervalSince(startTime) > 3 {
-                self.recorder.stop()
-                self.levelTimer.invalidate()
-                
-                self.screenshot()
-            }
-        }
-    }
-    
-    func checkOutputFile() {
-        let url = URL(fileURLWithPath: outputPath)
+    func checkFile(path: String) {
+        let url = URL(fileURLWithPath: path)
         let fileManager = FileManager.default
-        if fileManager.fileExists(atPath: outputPath) {
+        if fileManager.fileExists(atPath: path) {
             do {
                 try fileManager.removeItem(at: url)
             } catch let error as NSError {
@@ -126,6 +114,7 @@ class StatusMenuController: NSObject {
         let session = URLSession(configuration: sessionConfig)
         
         URLSession.shared.dataTask(with: SQBaseURL.appendingPathComponent("/recordingAvailable"), completionHandler: { data, _, _ in
+            self.checkFile(path: inputPath)
             if let data = data {
                 if let dataString = String(data: data, encoding: .utf8) {
                     print(dataString)
@@ -137,7 +126,7 @@ class StatusMenuController: NSObject {
                                     try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                                     
                                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
-                                        print("file downloaded -- for real this time!")
+                                        print("file downloaded")
                                         completion()
                                     })
                                     
