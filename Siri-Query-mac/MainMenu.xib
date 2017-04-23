@@ -24,7 +24,7 @@
                 <menuItem title="Run" id="DiN-lh-dw4">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="recordClicked:" target="YHE-ZD-Fjn" id="a40-uL-JvQ"/>
+                        <action selector="runSiri:" target="YHE-ZD-Fjn" id="CjG-sz-HXp"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Quit" id="C8v-5N-fbA">
