@@ -32,10 +32,36 @@ class StatusMenuController: NSObject {
         statusItem.image = icon
         statusItem.menu = statusMenu
         
+        SiriQueryAPI.resetServer()
         getRecording()
     }
     
     @IBAction func runSiri(_ sender: Any) {
+        let url = URL(fileURLWithPath: inputPath)
+        player = AVPlayer(url: url)
+        
+        NSWorkspace.shared().launchApplication("/Applications/Siri.app")
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500), execute: {
+            self.player.play()
+            
+            let length = self.player.currentItem?.asset.duration
+            let duration = Int(1000 * (CMTimeGetSeconds(length!)))
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration), execute: {
+                self.record()
+            })
+            
+            //            let task = Process()
+            //            task.launchPath = "/usr/bin/say"
+            //            task.arguments = ["what's the weather in atlanta"]
+            //            task.launch()
+            //            task.waitUntilExit()
+        })
+    }
+
+
+    func record() {
         checkFile(path: outputPath)
         
         let url = URL(fileURLWithPath: outputPath)
@@ -45,7 +71,6 @@ class StatusMenuController: NSObject {
         recorder.prepareToRecord()
         recorder.isMeteringEnabled = true
         recorder.record()
-        play()
         
         levelTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (Timer) in
             self.recorder.updateMeters()
@@ -58,7 +83,11 @@ class StatusMenuController: NSObject {
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(750), execute: {
                         self.screenshot()
                         
-                        SiriQueryAPI.deliverResponse(imagePath: imagePath, audioPath: outputPath)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(250), execute: {
+                            SiriQueryAPI.deliverResponse(imagePath: imagePath, audioPath: outputPath)
+                            
+                            self.getRecording()
+                        })
                     })
                 }
             }
@@ -69,22 +98,6 @@ class StatusMenuController: NSObject {
         NSApplication.shared().terminate(self)
     }
     
-    func play() {
-        let url = URL(fileURLWithPath: inputPath)
-        player = AVPlayer(url: url)
-        
-        NSWorkspace.shared().launchApplication("/Applications/Siri.app")
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
-            self.player.play()
-            
-//            let task = Process()
-//            task.launchPath = "/usr/bin/say"
-//            task.arguments = ["what's the weather in atlanta"]
-//            task.launch()
-//            task.waitUntilExit()
-        })
-    }
     
     func checkFile(path: String) {
         let url = URL(fileURLWithPath: path)
@@ -111,9 +124,8 @@ class StatusMenuController: NSObject {
     }
     
     
-    
     func getRecording() {
-        pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { (Timer) in
+        pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { (Timer) in
             self.download(url: SQBaseURL.appendingPathComponent("/nextRecording.wav"), to: URL(fileURLWithPath: inputPath), completion: {
                 self.runSiri(self)
             })
@@ -128,9 +140,15 @@ class StatusMenuController: NSObject {
                 
                 //download the new file
                 print("downloading")
-                let task = URLSession.shared.downloadTask(with: SQBaseURL.appendingPathComponent("/nextRecording.wav")) { (tempLocalUrl, response, error) in
+                
+                guard let id = SiriQueryAPI.currentTaskID else { return }
+                let downloadURL = SQBaseURL.appendingPathComponent("/recordings/\(id).wav")
+                
+                let task = URLSession.shared.downloadTask(with: downloadURL) { (tempLocalUrl, response, error) in
                     if let tempLocalUrl = tempLocalUrl, error == nil {
                         do {
+                            self.pollingTimer.invalidate()
+                            
                             try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
                             
                             DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {

@@ -12,8 +12,14 @@ class SiriQueryAPI {
     
     private static let baseURL = URL(string: "http://default-environment.r34djy5xx2.us-west-2.elasticbeanstalk.com")!
     
-    private static var currentTaskID: String?
+    static var currentTaskID: String?
     
+    
+    static func resetServer() {
+        dataTask(for: "/reset", completion: { response in
+            print("reset server: \(response ?? "none")")
+        })
+    }
     
     static func recordingAvailable(completion: @escaping (Bool) -> ()) {
         dataTask(for: "/recordingAvailable", completion: { response in
@@ -49,7 +55,7 @@ class SiriQueryAPI {
             }
             
             let base64 = data.base64EncodedData()
-            return String(data: base64, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "").replacingOccurrences(of: "/", with: "~")
+            return String(data: base64, encoding: .utf8)!.replacingOccurrences(of: "\n", with: "")
         })
         
         guard let imageData = base64s[0], let audioData = base64s[1] else { return }
