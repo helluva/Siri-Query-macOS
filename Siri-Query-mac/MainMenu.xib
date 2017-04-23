@@ -21,22 +21,10 @@
         </customObject>
         <menu id="mx8-0A-IMO">
             <items>
-                <menuItem title="Play File" id="I6W-1O-nOz">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="playClicked:" target="YHE-ZD-Fjn" id="IlV-ms-liF"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Record File" id="DiN-lh-dw4">
+                <menuItem title="Run" id="DiN-lh-dw4">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="recordClicked:" target="YHE-ZD-Fjn" id="a40-uL-JvQ"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Stop Recording" id="ZUK-ON-aVT">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="stopClicked:" target="YHE-ZD-Fjn" id="uOl-eK-ZUo"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Quit" id="C8v-5N-fbA">

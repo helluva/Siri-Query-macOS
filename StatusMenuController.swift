@@ -12,8 +12,10 @@ import AVFoundation
 
 class StatusMenuController: NSObject {
     
+    let savePath = "/Users/Nate/Desktop/Recording.mp4"
     var player: AVPlayer!
     var recorder: AVAudioRecorder!
+    var timer: Timer!
     @IBOutlet weak var statusMenu: NSMenu!
     
     let statusItem = NSStatusBar.system().statusItem(withLength: NSVariableStatusItemLength)
@@ -25,7 +27,34 @@ class StatusMenuController: NSObject {
         statusItem.menu = statusMenu
     }
     
-    @IBAction func playClicked(_ sender: NSMenuItem) {
+    @IBAction func recordClicked(_ sender: NSMenuItem) {
+        checkFile()
+        
+        let url = URL(fileURLWithPath: savePath)
+        let startTime = Date()
+        recorder = try? AVAudioRecorder(url: url, settings: [AVFormatIDKey : kAudioFormatMPEG4AAC, AVSampleRateKey : 44100])
+        recorder.prepareToRecord()
+        recorder.isMeteringEnabled = true
+        recorder.record()
+        play()
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { (Timer) in
+            self.recorder.updateMeters()
+            print(self.recorder.averagePower(forChannel: 0))
+            if self.recorder.averagePower(forChannel: 0) == -120.0 {
+                if Date().timeIntervalSince(startTime) > 3 {
+                    self.recorder.stop()
+                    self.timer.invalidate()
+                }
+            }
+        }
+    }
+    
+    @IBAction func quitClicked(sender: NSMenuItem) {
+        NSApplication.shared().terminate(self)
+    }
+    
+    func play() {
         let url = URL(fileURLWithPath: "/Users/Nate/Desktop/siriTest.mp3")
         player = AVPlayer(url: url)
         
@@ -36,19 +65,17 @@ class StatusMenuController: NSObject {
         })
     }
     
-    @IBAction func recordClicked(_ sender: NSMenuItem) {
-        let url = URL(fileURLWithPath: "/Users/Nate/Desktop/nort.mp4")
-        recorder = try? AVAudioRecorder(url: url, settings: [AVFormatIDKey : kAudioFormatMPEG4AAC, AVSampleRateKey : 44100])
-        recorder.prepareToRecord()
-        recorder.record()
-    }
-    
-    @IBAction func stopClicked(_ sender: NSMenuItem) {
-        recorder.stop()
-    }
-    
-    @IBAction func quitClicked(sender: NSMenuItem) {
-        NSApplication.shared().terminate(self)
+    func checkFile() {
+        let url = URL(fileURLWithPath: savePath)
+        let filePath = url.path
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
+            do {
+                try fileManager.removeItem(at: url)
+            } catch let error as NSError {
+                print(error)
+            }
+        }
     }
 }
     
