@@ -6,6 +6,8 @@
 //  Copyright © 2017 SiriQuery. All rights reserved.
 //
 
+import Foundation
+
 class SiriQueryAPI {
     
     private static let baseURL = URL(string: "http://localhost:8081"/*"http://default-environment.r34djy5xx2.us-west-2.elasticbeanstalk.com"*/)!
