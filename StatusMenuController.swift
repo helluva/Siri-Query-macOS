@@ -101,6 +101,8 @@ class StatusMenuController: NSObject {
         task2.launch()
     }
     
+    
+    
     func getRecording() {
         pollingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: false) { (Timer) in
             self.download(url: SQBaseURL.appendingPathComponent("/nextRecording.wav"), to: URL(fileURLWithPath: inputPath), completion: {
@@ -110,39 +112,32 @@ class StatusMenuController: NSObject {
     }
     
     func download(url: URL, to localUrl: URL, completion: @escaping () -> ()) {
-        let sessionConfig = URLSessionConfiguration.default
-        let session = URLSession(configuration: sessionConfig)
         
-        URLSession.shared.dataTask(with: SQBaseURL.appendingPathComponent("/recordingAvailable"), completionHandler: { data, _, _ in
-            self.checkFile(path: inputPath)
-            if let data = data {
-                if let dataString = String(data: data, encoding: .utf8) {
-                    print(dataString)
-                    if dataString == "true" {
-                        print("downloading")
-                        let task = session.downloadTask(with: SQBaseURL.appendingPathComponent("/nextRecording.wav")) { (tempLocalUrl, response, error) in
-                            if let tempLocalUrl = tempLocalUrl, error == nil {
-                                do {
-                                    try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
-                                    
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
-                                        print("file downloaded")
-                                        completion()
-                                    })
-                                    
-                                    
-                                    
-                                    
-                                } catch (let writeError) {
-                                    print("error writing file \(localUrl) : \(writeError)")
-                                }
-                            }
+        SiriQueryAPI.recordingAvailable(completion: { newRecordingAvailable in
+            if newRecordingAvailable {
+                
+                //download the new file
+                print("downloading")
+                let task = URLSession.shared.downloadTask(with: SQBaseURL.appendingPathComponent("/nextRecording.wav")) { (tempLocalUrl, response, error) in
+                    if let tempLocalUrl = tempLocalUrl, error == nil {
+                        do {
+                            try FileManager.default.copyItem(at: tempLocalUrl, to: localUrl)
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100), execute: {
+                                print("file downloaded")
+                                completion()
+                            })
+                            
+                        } catch (let writeError) {
+                            print("error writing file \(localUrl) : \(writeError)")
                         }
-                        task.resume()
                     }
                 }
+                task.resume()
+                
             }
-        }).resume()
+        })
+        
     }
     
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E4F36BC1EAC93A4009B431C /* SiriQueryAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4F36BB1EAC93A4009B431C /* SiriQueryAPI.swift */; };
 		430E44541EABF06300116ABC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430E44531EABF06300116ABC /* AppDelegate.swift */; };
 		430E44581EABF06300116ABC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 430E44571EABF06300116ABC /* Assets.xcassets */; };
 		430E44631EABF2A600116ABC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 430E44621EABF2A600116ABC /* MainMenu.xib */; };
@@ -14,6 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E4F36BB1EAC93A4009B431C /* SiriQueryAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SiriQueryAPI.swift; sourceTree = "<group>"; };
 		430E44501EABF06300116ABC /* Siri-Query-mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Siri-Query-mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		430E44531EABF06300116ABC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		430E44571EABF06300116ABC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -54,6 +56,7 @@
 			children = (
 				430E44531EABF06300116ABC /* AppDelegate.swift */,
 				430E44661EABF96A00116ABC /* StatusMenuController.swift */,
+				2E4F36BB1EAC93A4009B431C /* SiriQueryAPI.swift */,
 				430E44621EABF2A600116ABC /* MainMenu.xib */,
 				430E44571EABF06300116ABC /* Assets.xcassets */,
 				430E445C1EABF06300116ABC /* Info.plist */,
@@ -133,6 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E4F36BC1EAC93A4009B431C /* SiriQueryAPI.swift in Sources */,
 				430E44671EABF96A00116ABC /* StatusMenuController.swift in Sources */,
 				430E44541EABF06300116ABC /* AppDelegate.swift in Sources */,
 			);
