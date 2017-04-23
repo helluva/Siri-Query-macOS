@@ -11,7 +11,7 @@
 		430E44541EABF06300116ABC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 430E44531EABF06300116ABC /* AppDelegate.swift */; };
 		430E44581EABF06300116ABC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 430E44571EABF06300116ABC /* Assets.xcassets */; };
 		430E44631EABF2A600116ABC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 430E44621EABF2A600116ABC /* MainMenu.xib */; };
-		434528D11EAC80C1006CE595 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 434528D01EAC80C1006CE595 /* StatusMenuController.swift */; };
+		43FDD12D1EAC9792006A1517 /* StatusMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43FDD12C1EAC9792006A1517 /* StatusMenuController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,7 +21,7 @@
 		430E44571EABF06300116ABC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		430E445C1EABF06300116ABC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		430E44621EABF2A600116ABC /* MainMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		434528D01EAC80C1006CE595 /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
+		43FDD12C1EAC9792006A1517 /* StatusMenuController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusMenuController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,12 +55,8 @@
 			isa = PBXGroup;
 			children = (
 				430E44531EABF06300116ABC /* AppDelegate.swift */,
-<<<<<<< Updated upstream
-				430E44661EABF96A00116ABC /* StatusMenuController.swift */,
+				43FDD12C1EAC9792006A1517 /* StatusMenuController.swift */,
 				2E4F36BB1EAC93A4009B431C /* SiriQueryAPI.swift */,
-=======
-				434528D01EAC80C1006CE595 /* StatusMenuController.swift */,
->>>>>>> Stashed changes
 				430E44621EABF2A600116ABC /* MainMenu.xib */,
 				430E44571EABF06300116ABC /* Assets.xcassets */,
 				430E445C1EABF06300116ABC /* Info.plist */,
@@ -140,12 +136,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< Updated upstream
+				43FDD12D1EAC9792006A1517 /* StatusMenuController.swift in Sources */,
 				2E4F36BC1EAC93A4009B431C /* SiriQueryAPI.swift in Sources */,
-				430E44671EABF96A00116ABC /* StatusMenuController.swift in Sources */,
-=======
-				434528D11EAC80C1006CE595 /* StatusMenuController.swift in Sources */,
->>>>>>> Stashed changes
 				430E44541EABF06300116ABC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

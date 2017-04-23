@@ -24,13 +24,13 @@
                 <menuItem title="Run" id="DiN-lh-dw4">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="runSiri:" target="YHE-ZD-Fjn" id="CjG-sz-HXp"/>
+                        <action selector="runSiri:" target="YHE-ZD-Fjn" id="aAE-QQ-tTn"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Quit" id="C8v-5N-fbA">
+                <menuItem title="Quit SiriQuery Server" id="C8v-5N-fbA">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
-                        <action selector="quitClickedWithSender:" target="YHE-ZD-Fjn" id="Wgc-Xz-zbg"/>
+                        <action selector="quitClickedWithSender:" target="YHE-ZD-Fjn" id="O4l-i9-x6P"/>
                     </connections>
                 </menuItem>
             </items>

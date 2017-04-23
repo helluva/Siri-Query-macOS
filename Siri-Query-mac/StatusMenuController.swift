@@ -13,6 +13,7 @@ import AVFoundation
 let SQBaseURL = URL(string: "http://default-environment.r34djy5xx2.us-west-2.elasticbeanstalk.com")!
 let inputPath = "/Users/Nate/Desktop/input.wav"
 let outputPath = "/Users/Nate/Desktop/output.mp4"
+let imagePath = "/Users/Nate/Desktop/screenshot.jpg"
 
 class StatusMenuController: NSObject {
     
@@ -56,6 +57,8 @@ class StatusMenuController: NSObject {
                     self.levelTimer.invalidate()
                     DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(750), execute: {
                         self.screenshot()
+                        
+                        SiriQueryAPI.deliverResponse(imagePath: imagePath, audioPath: outputPath)
                     })
                 }
             }
@@ -74,6 +77,12 @@ class StatusMenuController: NSObject {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), execute: {
             self.player.play()
+            
+//            let task = Process()
+//            task.launchPath = "/usr/bin/say"
+//            task.arguments = ["what's the weather in atlanta"]
+//            task.launch()
+//            task.waitUntilExit()
         })
     }
     
@@ -92,7 +101,7 @@ class StatusMenuController: NSObject {
     func screenshot() {
         let task = Process()
         task.launchPath = "/usr/sbin/screencapture"
-        task.arguments = ["-iWa", "/Users/Nate/Desktop/Screenshot.jpg"]
+        task.arguments = ["-iWa", imagePath]
         task.launch()
         
         let task2 = Process()
@@ -112,6 +121,7 @@ class StatusMenuController: NSObject {
     }
     
     func download(url: URL, to localUrl: URL, completion: @escaping () -> ()) {
+        checkFile(path: inputPath)
         
         SiriQueryAPI.recordingAvailable(completion: { newRecordingAvailable in
             if newRecordingAvailable {
